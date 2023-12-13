@@ -129,7 +129,7 @@ def renderKeyboard(x, y):
 print("Parsing MIDI")
 i = 0
 last_ts = time.time()
-mid = MidiFile(MIDI)
+mid = MidiFile(MIDI, clip=True)
 mi = 0
 for msg in mid:
   tt += msg.time
