@@ -1,6 +1,6 @@
 mido
 numpy
 subprocess
-cv2
+opencv-python
 alive_progress
 midi2audio
