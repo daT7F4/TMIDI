@@ -14,17 +14,17 @@ from midi2audio import FluidSynth
 try:
   os.remove("output.mp4")
 except FileNotFoundError:
-  print(" ")
+  pass
 
 try:
   os.remove("movie.mp4")
 except FileNotFoundError:
-  print(" ")
+  pass
 
 try:
   shutil.rmtree("images")
 except FileNotFoundError:
-  print(" ")
+  pass
 
 os.mkdir("images")
 
@@ -77,7 +77,7 @@ zoom = 3840  # how fast the notes will move(px/s)
 
 # 0 = Index
 # 1 = Time
-tNotes = [[[0] * 2 for _ in range(128)] for _ in range(16)]
+tNotes = [[[0, 0] for _ in range(128)] for _ in range(16)]
 
 def rectangle(tl, br, c, image):
   cv2.rectangle(image, tl, br, c, cv2.FILLED)
@@ -139,7 +139,6 @@ i = 0
 last_ts = time.time()
 mid = MidiFile(MIDI, clip=True)
 mi = 0
-channels.append([0, 0, 0, 0, 0])
 for msg in mid:
   tt += msg.time
   if msg.type == 'note_on' or msg.type == 'note_off':
@@ -153,7 +152,10 @@ for msg in mid:
         channels.append([msg.note, tt, 0, c, msg.velocity])
         i += 1
     if msg.type == 'note_off':
-      channels[tNotes[c][msg.note][0]][2] = tt - tNotes[c][msg.note][1]
+      try:
+        channels[tNotes[c][msg.note][0]][2] = tt - tNotes[c][msg.note][1]
+      except IndexError:
+        raise Exception('MIDI started using a note_off event or a 0 velocity note')
 mi = i
 
 
@@ -178,7 +180,7 @@ def drawLine(x1, y1, y2, r, g, b, image):
   cv2.line(image, tl, br, rc, 8)
 
 print("Took " + str(time.time() - last_ts) + " seconds!")
-print("Generating Frames")
+print("Rendering Frames")
 last_t = time.time()
 frame_files = []
 
@@ -208,11 +210,16 @@ def threadRender(start):
         ti += 1
       if H - ((y - offset) * zoom) < 0:
         break
-      drawLine(x * 8, H - ((y - offset) * zoom), d * zoom, colors[c][0], colors[c][1], colors[c][2], image)
+      if H - ((y + d - offset) * zoom) < H:
+        drawLine(x * 8, H - ((y - offset) * zoom), d * zoom, colors[c][0], colors[c][1], colors[c][2], image)
       if H - ((y - offset) * zoom) > H - 44 and H -((y + d - offset) * zoom) < H:
         render[x] = c
-
-      i += 1
+      li = i
+      while H - ((channels[i][1] + channels[i][2] - offset) * zoom) > H:
+        i += 1
+      if li == i:
+        i += 1
+      
 
     offset += steps * THREADS
     renderKeyboard(0, H - 44, image)
@@ -224,6 +231,7 @@ def threadRender(start):
       cv2.imwrite("./images/img" + str(fr).zfill(5) + ".png", image)
       frame_files.append("img" + str(fr).zfill(5) + ".png")
     fr += THREADS
+    print("Rendered Frame #" + str(fr))
 
 def merge(r, parts, renders, s):
   video_writer = cv2.VideoWriter("output" + str(r) + ".mp4", cv2.VideoWriter_fourcc(*'mp4v'), framerate, (W, H))
