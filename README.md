@@ -42,6 +42,6 @@ Run it by using ``` python3 main.py ```
 
 You will be prompted to input the name ***and*** the extension of the MIDI file, for example ```example.mid```. After that you will be prompted to input the name ***and*** the extension of the SoundFont file, for example ```example.sf2```. Then it will render the MIDI file. The time depends on the size of the MIDI file and the processing power of your CPU
 
-The 2 output files are named ```output.mp4```(Only video) ```movie.mp4```(Video and Audio)
+The 5 output files are named ```output0/1/2/3.mp4```(Only video) ```movie.mp4```(Video and Audio)
 
 If you have some problems or opinions, feel free to open an issue
