@@ -32,7 +32,7 @@ and
 ```
 brew install ffmpeg
 ```
-Windows: 
+## Windows: 
 [FFMPEG](https://www.ffmpeg.org/download.html#build-windows)
 [FluidSynth](https://github.com/FluidSynth/fluidsynth/releases)
 
