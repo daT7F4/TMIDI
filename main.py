@@ -139,6 +139,7 @@ i = 0
 last_ts = time.time()
 mid = MidiFile(MIDI, clip=True)
 mi = 0
+channels.append([0, 0, 0, 0, 0])
 for msg in mid:
   tt += msg.time
   if msg.type == 'note_on' or msg.type == 'note_off':
