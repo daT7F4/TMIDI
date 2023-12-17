@@ -3,7 +3,7 @@ MIDI renderer written in Python
 
 ### Setup
 
-First, you need the main.py file, a .sf2(soundfont) file and a MIDI file to render
+First, you need the main.py file, the videos.txt file, a .sf2(soundfont) file and a MIDI file to render
 
 Second, you need to install some dependencies using pip
 * mido
