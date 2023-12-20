@@ -16,11 +16,7 @@ Second, you need to install some dependencies using pip
 You will also need to install FluidSynth and ffmpeg but you can't install them just using pip
 ## Linux:
 ```
-sudo apt install fluidsynth
-```
-and 
-```
-sudo apt install ffmpeg
+sudo apt upgrade fluidsynth ffmpeg -y
 ```
 
 ## Mac:
