@@ -5,7 +5,7 @@ MIDI renderer written in Python
 
 First, you need the main.py file, the requirements.txt file , a .sf2(soundfont) file and a MIDI file to render
 
-Second, you need to install some dependencies using pip, you can use `pip install -r requirements.txt` for that
+Second, you need to install some dependencies using pip, you can use `python3.10 -m pip install -r requirements.txt` for that
 * mido
 * numpy
 * subprocess
@@ -30,7 +30,7 @@ brew install fluidsynth ffmpeg
 
 ### Running
 
-Run it by using ``` python3 main.py ```
+Run it by using ``` python3.10 main.py ```
 
 You will be prompted to input the name ***and*** the extension of the MIDI file, for example ```example.mid```. After that you will be prompted to input the name ***and*** the extension of the SoundFont file, for example ```example.sf2```. Then it will render the MIDI file. The time depends on the size of the MIDI file and the processing power of your CPU
 
