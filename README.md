@@ -12,6 +12,7 @@ Second, you need to install some dependencies using pip
 * cv2
 * alive_progress
 * midi2audio
+
 You can also run `pip install -r requirements.txt`
 
 You will also need to install FluidSynth and ffmpeg but you can't install them just using pip
