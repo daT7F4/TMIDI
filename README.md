@@ -3,17 +3,15 @@ MIDI renderer written in Python
 
 ### Setup
 
-First, you need the main.py file, the videos.txt file, a .sf2(soundfont) file and a MIDI file to render
+First, you need the main.py file, the requirements.txt file , a .sf2(soundfont) file and a MIDI file to render
 
-Second, you need to install some dependencies using pip
+Second, you need to install some dependencies using pip, you can use `pip install -r requirements.txt` for that
 * mido
 * numpy
 * subprocess
 * cv2
 * alive_progress
 * midi2audio
-
-You can also run `pip install -r requirements.txt`
 
 You will also need to install FluidSynth and ffmpeg but you can't install them just using pip
 ## Linux:
