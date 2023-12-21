@@ -28,11 +28,7 @@ sudo apt install ffmpeg
 ## Mac:
 (If you are using homebrew)
 ```
-brew install fluidsynth
-```
-and 
-```
-brew install ffmpeg
+brew install fluidsynth ffmpeg
 ```
 ## Windows: 
 [FFMPEG](https://www.ffmpeg.org/download.html#build-windows)
