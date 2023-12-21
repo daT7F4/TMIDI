@@ -1,15 +1,11 @@
 print("Importing...")
 
-print("Midi")
 from mido import MidiFile
-print("Numpy")
-import numpy as np
-print("OS, Time, random, Subprocess, OpenCV, shutil, threading")
-import os, time, random, subprocess, cv2, shutil, threading
-print("Alive progress")
-from alive_progress import alive_bar
-print("Fluidsynth")
+import os, time, random, subprocess, shutil, threading
+import cv2
 from midi2audio import FluidSynth
+from alive_progress import alive_bar
+import numpy as np
 
 try:
   os.remove("output.mp4")
@@ -70,8 +66,8 @@ MIDI = input("Enter the MIDI file name with the extension: ")
 SOUNDFONT = input("Enter the Soundfont file name with the extension: ")
 THREADS = 4
 framerate = 60
-steps = 1/framerate  # the amount of time the notes move every frame
-offset = 0  # start offset(in seconds
+steps = 1/framerate  # the amount of time the notes move every frame(don't change)
+offset = 0  # start offset in seconds(don't change)
 zoom = 3840  # how fast the notes will move(px/s)
 # <----------> MAIN PARAMETERS <---------->
 
@@ -156,6 +152,7 @@ for msg in mid:
         channels[tNotes[c][msg.note][0]][2] = tt - tNotes[c][msg.note][1]
       except IndexError:
         raise Exception('MIDI started using a note_off event or a 0 velocity note')
+mt = tt
 mi = i
 
 
@@ -217,79 +214,43 @@ def threadRender(start):
       li = i
       while H - ((channels[i][1] + channels[i][2] - offset) * zoom) > H:
         i += 1
+        try:
+          channels[i][1]
+        except IndexError:
+          i -= 1
+          break
       if li == i:
         i += 1
-      
 
     offset += steps * THREADS
     renderKeyboard(0, H - 44, image)
     for j in range(128):
       if render[j] > -1:
         renderKey(j * 8, H - 44, keys[j % 12], colors[render[j]][0], colors[render[j]][1], colors[render[j]][2], image)
-        #drawParticle(j * 8, H - 44, colors[render[j]][0], colors[render[j]][1], colors[render[j]][2])
     if "./images/img" + str(fr).zfill(5) + ".png" not in frame_files:
       cv2.imwrite("./images/img" + str(fr).zfill(5) + ".png", image)
       frame_files.append("img" + str(fr).zfill(5) + ".png")
     fr += THREADS
-    print("Rendered Frame #" + str(fr))
+    bar()
 
-def merge(r, parts, renders, s):
-  video_writer = cv2.VideoWriter("output" + str(r) + ".mp4", cv2.VideoWriter_fourcc(*'mp4v'), framerate, (W, H))
-  for i in range(parts):
-    video_writer.write(cv2.imread('./images/' + s[int(i + renders[r])]))
-  video_writer.release()
-
-if __name__ =="__main__":
-    t1 = threading.Thread(target=threadRender, args=(0,))
-    t2 = threading.Thread(target=threadRender, args=(1,))
-    t3 = threading.Thread(target=threadRender, args=(2,))
-    t4 = threading.Thread(target=threadRender, args=(3,))
-    t1.start()
-    t2.start()
-    t3.start()
-    t4.start()
-    t1.join()
-    t2.join()
-    t3.join()
-    t4.join()
-    print("Done!")
+threads = []
+with alive_bar(int(mt / steps) - 101) as bar:
+  for i in range(THREADS):
+    threads.append(threading.Thread(target=threadRender, args=(i,)))
+  for thread in threads:
+    thread.start()
+  for thread in threads:
+    thread.join()
 
 print("Frames rendered! Took " + str(time.time() - last_t) + " seconds!")
 
 FluidSynth(SOUNDFONT).midi_to_audio(MIDI, 'output.wav')
 channels = 0
 
-print("Merging video")
-
-print("Sorting Files")
-sorted_frame_files = sorted(frame_files, key=lambda x:int(x[3:-4]))
-frame_files = 0
-
 print("Writing Video")
 
-
-parts = int(len(sorted_frame_files) / THREADS)
-renders = []
-for i in range(THREADS):
-  renders.append(parts * i)
-
-if __name__ =="__main__":
-    t1 = threading.Thread(target=merge, args=(0,parts,renders,sorted_frame_files,))
-    t2 = threading.Thread(target=merge, args=(1,parts,renders,sorted_frame_files,))
-    t3 = threading.Thread(target=merge, args=(2,parts,renders,sorted_frame_files,))
-    t4 = threading.Thread(target=merge, args=(3,parts,renders,sorted_frame_files,))
-    t1.start()
-    t2.start()
-    t3.start()
-    t4.start()
-    t1.join()
-    t2.join()
-    t3.join()
-    t4.join()
-    print("Done!")
-
 subprocess.run(
-    'ffmpeg -f concat -i videos.txt -c copy output.mp4',
+    'ffmpeg -r ' + str(framerate) + ' -i images/img%05d.png output.mp4',
     shell=True,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
