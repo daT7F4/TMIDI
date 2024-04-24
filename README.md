@@ -30,7 +30,7 @@ brew install fluidsynth ffmpeg
 
 ### Running
 
-Run it by using ``` python3.10 main.py ```
+Run it by using ``` python3 main.py ```
 
 You will be prompted to input the name ***and*** the extension of the MIDI file, for example ```example.mid```. After that you will be prompted to input the name ***and*** the extension of the SoundFont file, for example ```example.sf2```. Then it will render the MIDI file. The time depends on the size of the MIDI file and the processing power of your CPU
 
